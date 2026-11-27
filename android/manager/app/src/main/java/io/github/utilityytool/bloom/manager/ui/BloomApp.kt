@@ -35,6 +35,12 @@ fun BloomApp(state: AppState) {
         return
     }
 
+    var showInstall by rememberSaveable { mutableStateOf(false) }
+    if (showInstall) {
+        InstallScreen(onClose = { showInstall = false })
+        return
+    }
+
     var tab by rememberSaveable { mutableStateOf(Tab.HOME) }
     Scaffold(
         bottomBar = {
@@ -52,7 +58,7 @@ fun BloomApp(state: AppState) {
     ) { pad ->
         Box(Modifier.fillMaxSize().padding(pad)) {
             when (tab) {
-                Tab.HOME -> HomeScreen(state, onOpenPlugins = { tab = Tab.PLUGINS })
+                Tab.HOME -> HomeScreen(state, onOpenPlugins = { tab = Tab.PLUGINS }, onOpenInstall = { showInstall = true })
                 Tab.PLUGINS -> PluginsScreen(state)
                 Tab.SETTINGS -> SettingsScreen(state)
             }

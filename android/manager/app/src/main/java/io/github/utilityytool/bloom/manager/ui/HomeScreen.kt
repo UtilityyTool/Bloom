@@ -36,7 +36,7 @@ import io.github.utilityytool.bloom.manager.data.AppState
 import io.github.utilityytool.bloom.manager.data.findDiscord
 
 @Composable
-fun HomeScreen(state: AppState, onOpenPlugins: () -> Unit) {
+fun HomeScreen(state: AppState, onOpenPlugins: () -> Unit, onOpenInstall: () -> Unit) {
     val context = LocalContext.current
     var discord by remember { mutableStateOf(findDiscord(context)) }
 
@@ -95,11 +95,11 @@ fun HomeScreen(state: AppState, onOpenPlugins: () -> Unit) {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("Add Bloom to Discord", style = MaterialTheme.typography.titleMedium)
                     Text(
-                        "Bloom Manager will make a copy of Discord with Bloom inside and install it next to the regular app. This part isn't built yet.",
+                        "Get on Discord's Alpha and turn on Phoenix, so Bloom can run. We'll walk you through it.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    Button(onClick = {}, enabled = false) { Text("Coming soon") }
+                    Button(onClick = onOpenInstall) { Text("Set up Bloom") }
                 }
             }
         }
