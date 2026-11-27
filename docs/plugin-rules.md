@@ -10,7 +10,6 @@ The rulebook for anyone making a Bloom plugin. Bloom enforces most of these rule
 2. **Never act for the user.** No sending messages, joining servers or clicking things on their behalf.
 3. **Stay fast.** Bloom measures every plugin. Slow plugins get warned, then paused.
 4. **Keep data on the device** unless your plugin's job is to send it somewhere, and you say where.
-5. **Write your own code.** Store plugins must be original or properly licensed.
 
 ---
 
@@ -140,7 +139,7 @@ Every store plugin is read by a person before it's listed. They check:
 - [ ] No rule from [Never allowed](#4-never-allowed) is broken
 - [ ] It stays inside the [performance limits](#5-performance-bloom-must-feel-instant) on a mid-range phone
 - [ ] The code is readable (not minified or obfuscated)
-- [ ] The code is original, or its license allows it and it's credited (see [Originality](#10-originality-and-license))
+- [ ] The plugin uses a GPL-3.0-compatible license (see [License](#10-license))
 - [ ] It works on both Windows and Android, or says clearly which one it's for
 
 ## 9. Updates
@@ -150,11 +149,9 @@ Every store plugin is read by a person before it's listed. They check:
 - **Major** (`1.0.0` → `2.0.0`): big changes or new permissions. The user is asked first.
 - If Bloom's hooks change after a Discord update and your plugin needs one that's broken, Bloom **pauses** your plugin instead of letting it crash. It turns back on by itself when the hook is fixed.
 
-## 10. Originality and license
+## 10. License
 
-- Bloom is licensed under the **GPL-3.0**. Plugins in the store must use a GPL-3.0-compatible license.
-- Write your own code. Don't copy plugins from other Discord mods. If a plugin was inspired by another mod's *idea*, that's fine, but say so in the README.
-- If you use someone else's open-source code, its license must allow it, and you credit them in the README.
+Bloom is licensed under the **GPL-3.0**. Plugins in the store must use a GPL-3.0-compatible license.
 
 ## 11. A full example
 

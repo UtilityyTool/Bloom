@@ -50,7 +50,7 @@ The test build is the Bloom Manager app's look and setup flow only. It does not 
 
 ## Contributing
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) first. The short version: original code only, smooth or it doesn't ship, and the user's account comes first.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) first. The short version: smooth or it doesn't ship, and the user's account comes first.
 
 ## License
 
