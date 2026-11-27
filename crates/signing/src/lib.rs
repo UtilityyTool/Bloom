@@ -10,7 +10,7 @@
 
 mod digest;
 
-pub use digest::{digest_plugin, to_hex, PluginDigest};
+pub use digest::{digest_plugin, from_hex, to_hex, PluginDigest};
 
 use ed25519_dalek::{Signer, Verifier};
 use rand_core::OsRng;
@@ -40,6 +40,30 @@ pub fn sign(key: &SigningKey, digest: &PluginDigest) -> Signature {
 /// signature over exactly this digest.
 pub fn verify(key: &VerifyingKey, digest: &PluginDigest, signature: &Signature) -> bool {
     key.verify(digest.as_bytes(), signature).is_ok()
+}
+
+/// A signature as hex, for storing next to a plugin.
+pub fn signature_to_hex(sig: &Signature) -> String {
+    to_hex(&sig.to_bytes())
+}
+
+/// Parse a hex signature. None if it isn't 64 bytes of valid hex.
+pub fn signature_from_hex(s: &str) -> Option<Signature> {
+    let bytes = from_hex(s)?;
+    let arr: [u8; 64] = bytes.try_into().ok()?;
+    Some(Signature::from_bytes(&arr))
+}
+
+/// Bloom's public key as hex, for baking into the app.
+pub fn verifying_key_to_hex(key: &VerifyingKey) -> String {
+    to_hex(key.as_bytes())
+}
+
+/// Parse Bloom's public key from hex. None if it isn't a valid key.
+pub fn verifying_key_from_hex(s: &str) -> Option<VerifyingKey> {
+    let bytes = from_hex(s)?;
+    let arr: [u8; 32] = bytes.try_into().ok()?;
+    VerifyingKey::from_bytes(&arr).ok()
 }
 
 /// Where a plugin came from.

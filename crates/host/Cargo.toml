@@ -1,0 +1,10 @@
+[package]
+name = "bloom-host"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+description = "The Bloom host harness: loads a plugin, verifies it, enforces permissions, runs it."
+
+[dependencies]
+bloom-runtime = { path = "../runtime", features = ["js"] }
+bloom-signing = { path = "../signing" }

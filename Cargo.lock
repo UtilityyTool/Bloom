@@ -42,6 +42,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "bloom-host"
+version = "0.1.0"
+dependencies = [
+ "bloom-runtime",
+ "bloom-signing",
+]
+
+[[package]]
 name = "bloom-runtime"
 version = "0.1.0"
 dependencies = [

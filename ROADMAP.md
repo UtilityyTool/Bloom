@@ -15,6 +15,7 @@ Where the project is and what's next. This is the running to-do list.
   - 19 passing tests
 - **Plugin author tooling** — typed API (`api/bloom.d.ts`) and a starter template (`plugins/_template`) that type-checks and builds.
 - **Plugin signing (`crates/signing`)** — Ed25519 signatures over a plugin digest; tamper-proof Verified badge; trust levels. 5 tests.
+- **Host harness (`crates/host`)** — ties it together: loads a plugin folder, decides its trust level, enforces permissions, runs it, times it. Runnable demo + 4 tests. This is Bloom's brain with the Discord connection stubbed.
 
 ## Next
 
@@ -30,7 +31,7 @@ Where the project is and what's next. This is the running to-do list.
 ## Later
 
 - **Vencord/BD porting** — not binary compatibility (Phoenix is native, their plugins target the old web Discord). Instead: a familiar API + a porting guide, and maybe a source shim for logic-only plugins. Honor licenses (Vencord is GPL-3.0, Bloom-compatible) and credit authors.
-- **Host bridge** — connect the runtime to Discord's real UI (needs the on-device loader).
+- **Host bridge** — connect the host harness to Discord's real UI and events (needs the on-device loader). The harness is ready for it.
 - **Windows desktop** — installer, launcher, the drop-down menu, once Phoenix desktop reaches early access.
 - **Remote sunset switch** — turn the Phoenix-unlock step off everywhere the day Discord ships Phoenix publicly.
 
