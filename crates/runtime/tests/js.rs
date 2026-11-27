@@ -112,3 +112,62 @@ fn example_clean_links_plugin_strips_trackers() {
     assert!(!msg.text.contains("si="), "tracker remained: {}", msg.text);
     assert!(msg.text.contains("v=abc"), "real param lost: {}", msg.text);
 }
+
+#[test]
+fn storage_persists_across_dispatches() {
+    let mut p = JsPlugin::load(
+        grant(r#""storage""#),
+        "bloom.on('message', function () { var n = Number(bloom.storage.get('n') || '0'); bloom.storage.set('n', String(n + 1)); bloom.log(bloom.storage.get('n')); });",
+    )
+    .unwrap();
+    let mut m = Message { text: "".into() };
+    assert_eq!(p.dispatch(Event::MessageReceived, &mut m).logs, vec!["1".to_string()]);
+    assert_eq!(p.dispatch(Event::MessageReceived, &mut m).logs, vec!["2".to_string()]);
+    assert_eq!(p.dispatch(Event::MessageReceived, &mut m).logs, vec!["3".to_string()]);
+}
+
+#[test]
+fn storage_blocked_without_permission() {
+    let mut p = JsPlugin::load(
+        grant(""),
+        "bloom.on('message', function () { bloom.storage.set('x', '1'); });",
+    )
+    .unwrap();
+    let mut m = Message { text: "".into() };
+    let o = p.dispatch(Event::MessageReceived, &mut m);
+    assert!(o.error.is_some());
+    assert!(o.error.unwrap().contains("storage"));
+}
+
+#[test]
+fn storage_is_isolated_between_plugins() {
+    let mut a = JsPlugin::load(
+        grant(r#""storage""#),
+        "bloom.on('message', function () { bloom.storage.set('k', 'A'); });",
+    )
+    .unwrap();
+    let mut b = JsPlugin::load(
+        grant(r#""storage""#),
+        "bloom.on('message', function () { bloom.log(String(bloom.storage.get('k'))); });",
+    )
+    .unwrap();
+    let mut m = Message { text: "".into() };
+    a.dispatch(Event::MessageReceived, &mut m);
+    let o = b.dispatch(Event::MessageReceived, &mut m);
+    assert_eq!(o.logs, vec!["null".to_string()]); // b never sees a's data
+}
+
+#[test]
+fn storage_cap_is_enforced() {
+    let mut p = JsPlugin::load(
+        grant(r#""storage""#),
+        "bloom.on('message', function () { bloom.storage.set('big', 'x'.repeat(1000)); });",
+    )
+    .unwrap()
+    .with_storage_cap(50);
+    let mut m = Message { text: "".into() };
+    let o = p.dispatch(Event::MessageReceived, &mut m);
+    assert!(o.error.is_some());
+    assert!(o.error.unwrap().contains("storage limit"));
+    assert_eq!(p.storage_json(), "{}"); // nothing over the cap was saved
+}

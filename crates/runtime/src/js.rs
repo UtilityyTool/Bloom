@@ -39,6 +39,7 @@ var __handlers = {};
 var __log = [];
 var __grants = [];
 var __event = {};
+var __storage = {};
 function __has(p) { return __grants.indexOf(p) >= 0; }
 var bloom = {
   on: function (ev, fn) { __handlers[ev] = fn; },
@@ -54,6 +55,24 @@ var bloom = {
   setOutgoingText: function (t) {
     if (!__has('messages.edit-outgoing')) throw new Error('permission denied: messages.edit-outgoing');
     __event.outText = String(t);
+  },
+  storage: {
+    get: function (k) {
+      if (!__has('storage')) throw new Error('permission denied: storage');
+      return __storage.hasOwnProperty(k) ? __storage[k] : null;
+    },
+    set: function (k, v) {
+      if (!__has('storage')) throw new Error('permission denied: storage');
+      __storage[String(k)] = String(v);
+    },
+    remove: function (k) {
+      if (!__has('storage')) throw new Error('permission denied: storage');
+      delete __storage[String(k)];
+    },
+    keys: function () {
+      if (!__has('storage')) throw new Error('permission denied: storage');
+      return Object.keys(__storage);
+    }
   }
 };
 function __dispatch(ev) {
@@ -64,10 +83,16 @@ function __dispatch(ev) {
 }
 "#;
 
+/// Per-plugin storage cap. The rulebook allows a plugin up to 5 MB on the device.
+pub const STORAGE_CAP: usize = 5 * 1024 * 1024;
+
 /// A loaded JS plugin: its own JS engine context plus the grant that gates it.
 pub struct JsPlugin {
     ctx: Context,
     grant: Grant,
+    /// This plugin's saved storage, as a JSON object string. Isolated per plugin.
+    stored: String,
+    storage_cap: usize,
 }
 
 impl JsPlugin {
@@ -79,7 +104,28 @@ impl JsPlugin {
         let grants_json = serde_json::to_string(&keys).unwrap_or_else(|_| "[]".to_string());
         eval(&mut ctx, &format!("__grants = {};", grants_json))?;
         eval(&mut ctx, source).map_err(|e| format!("plugin failed to load: {e}"))?;
-        Ok(JsPlugin { ctx, grant })
+        Ok(JsPlugin {
+            ctx,
+            grant,
+            stored: "{}".to_string(),
+            storage_cap: STORAGE_CAP,
+        })
+    }
+
+    /// Lower the storage cap (used in tests).
+    pub fn with_storage_cap(mut self, cap: usize) -> Self {
+        self.storage_cap = cap;
+        self
+    }
+
+    /// This plugin's saved storage, as JSON — so the host can persist it to disk.
+    pub fn storage_json(&self) -> &str {
+        &self.stored
+    }
+
+    /// Restore saved storage (e.g. from disk on startup).
+    pub fn load_storage(&mut self, json: &str) {
+        self.stored = json.to_string();
     }
 
     /// Hand one event to the plugin. `msg` is the message in play; for `BeforeSend`, an
@@ -107,8 +153,16 @@ impl JsPlugin {
         };
 
         let mut outcome = DispatchOutcome::default();
-        // Fresh event + log for this dispatch.
-        let _ = eval(&mut self.ctx, &format!("__log = []; __event = {event_json};"));
+        // Fresh event + log for this dispatch, plus this plugin's saved storage (only if allowed).
+        let storage_init = if self.grant.allows(Permission::Storage) {
+            self.stored.clone()
+        } else {
+            "{}".to_string()
+        };
+        let _ = eval(
+            &mut self.ctx,
+            &format!("__log = []; __event = {event_json}; __storage = {storage_init};"),
+        );
 
         let start = Instant::now();
         let result = eval(&mut self.ctx, &format!("__dispatch('{kind}')"));
@@ -123,6 +177,19 @@ impl JsPlugin {
         if let Ok(s) = eval(&mut self.ctx, "JSON.stringify(__log)") {
             if let Ok(parsed) = serde_json::from_str::<Vec<String>>(&s) {
                 outcome.logs = parsed;
+            }
+        }
+
+        // Persist storage changes, enforcing the cap. Rust is the gate: over cap, nothing saves.
+        if self.grant.allows(Permission::Storage) {
+            if let Ok(s) = eval(&mut self.ctx, "JSON.stringify(__storage)") {
+                if s.len() <= self.storage_cap {
+                    self.stored = s;
+                } else {
+                    outcome
+                        .error
+                        .get_or_insert_with(|| format!("storage limit exceeded ({} bytes)", self.storage_cap));
+                }
             }
         }
 
