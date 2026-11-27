@@ -139,21 +139,42 @@ Every store plugin is read by a person before it's listed. They check:
 - [ ] No rule from [Never allowed](#4-never-allowed) is broken
 - [ ] It stays inside the [performance limits](#5-performance-bloom-must-feel-instant) on a mid-range phone
 - [ ] The code is readable (not minified or obfuscated)
-- [ ] The plugin uses a GPL-3.0-compatible license (see [License](#10-license))
+- [ ] The plugin uses a GPL-3.0-compatible license (see [License](#11-license))
 - [ ] It works on both Windows and Android, or says clearly which one it's for
 
-## 9. Updates
+## 9. Developer mode and unverified plugins
+
+Every plugin has a trust level, and the user always sees which:
+
+- **Verified** — reviewed and signed by Bloom (green check). From the store.
+- **Community** — in the store but not yet verified. Installable, with a warning.
+- **Developer** — loaded from a folder on the device (Developer mode), for people building plugins.
+
+Two warnings are required. Neither can be turned off.
+
+**Turning on Developer mode** shows a warning *every time it's switched on*:
+- Only add plugins you made yourself or fully trust.
+- **Never** add a plugin because someone told you to, or one you found outside the Bloom store — that's how accounts get stolen.
+- Know what you're doing.
+
+The user must tick "I understand" before it turns on.
+
+**Turning on any unverified plugin** (Community or Developer) shows a warning *every single time it's enabled* — repeating the same caution and showing exactly what the plugin can access. The user must confirm before it turns on.
+
+Why: the most common attack isn't a clever exploit, it's someone being talked into pasting a "plugin" that steals their account. The sandbox still limits what any plugin can do; these warnings are the human check on top of it.
+
+## 10. Updates
 
 - **Patch** (`1.0.0` → `1.0.1`): bug fixes. Installs automatically.
 - **Minor** (`1.0.0` → `1.1.0`): new features, same permissions. Installs automatically.
 - **Major** (`1.0.0` → `2.0.0`): big changes or new permissions. The user is asked first.
 - If Bloom's hooks change after a Discord update and your plugin needs one that's broken, Bloom **pauses** your plugin instead of letting it crash. It turns back on by itself when the hook is fixed.
 
-## 10. License
+## 11. License
 
 Bloom is licensed under the **GPL-3.0**. Plugins in the store must use a GPL-3.0-compatible license.
 
-## 11. A full example
+## 12. A full example
 
 ```ts
 // index.ts for "Clean links"

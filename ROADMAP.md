@@ -23,6 +23,7 @@ Where the project is and what's next. This is the running to-do list.
   - automated checks at publish time: code matches declared permissions, no obfuscation, flag risky combos (e.g. reads messages **and** sends to a server)
   - two tiers: **Verified** (reviewed + signed, green check) vs **Community** (installable with a clear "not reviewed" warning)
   - developers adding plugins locally are never flagged; flagging is a publish-time gate, and genuinely risky code is what it catches
+  - **required warnings** (specced in the rulebook, mocked up): a warning every time Developer mode is turned on, and a warning every time an unverified plugin is enabled — both telling the user not to add plugins they were told to add or found outside the store
 - **Plugin store** — browse/install from inside Discord's Bloom menu.
 
 ## Later
