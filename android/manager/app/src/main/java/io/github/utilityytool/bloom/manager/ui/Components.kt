@@ -3,11 +3,13 @@ package io.github.utilityytool.bloom.manager.ui
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,27 +22,50 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.utilityytool.bloom.manager.R
 import io.github.utilityytool.bloom.manager.data.PluginInfo
 
-/** The Bloom flower logo, drawn in the current theme's colors. */
+/** The Bloom logo ("Bud"), with its violet-to-pink gradient. */
 @Composable
 fun BloomMark(size: Dp, modifier: Modifier = Modifier) {
-    val petal = MaterialTheme.colorScheme.primary
-    val center = MaterialTheme.colorScheme.onPrimary
-    Canvas(modifier.size(size)) {
-        val r = this.size.minDimension * 0.19f
-        val c = this.size.minDimension / 2f
-        val d = this.size.minDimension * 0.23f
-        listOf(Offset(c, c - d), Offset(c + d, c), Offset(c, c + d), Offset(c - d, c)).forEach {
-            drawCircle(petal, r, it)
-        }
-        drawCircle(center, r * 0.62f, Offset(c, c))
+    Image(
+        painter = painterResource(R.drawable.bloom_mark),
+        contentDescription = null,
+        modifier = modifier.size(size),
+    )
+}
+
+/** "Bloom" in rounded Google Sans Flex, drawn as a vector so it looks the same everywhere. */
+@Composable
+fun BloomWordmark(height: Dp, modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.onSurface) {
+    Image(
+        painter = painterResource(R.drawable.bloom_wordmark),
+        contentDescription = "Bloom",
+        colorFilter = ColorFilter.tint(color),
+        modifier = modifier.height(height).aspectRatio(WORDMARK_RATIO),
+    )
+}
+
+/** Logo and wordmark side by side, spaced the same way as on the Brand page. */
+@Composable
+fun BloomLockup(height: Dp, modifier: Modifier = Modifier) {
+    Row(
+        modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(height * 0.38f),
+    ) {
+        BloomMark(height * 1.45f)
+        BloomWordmark(height)
     }
 }
+
+private const val WORDMARK_RATIO = 4.65f
 
 /** Rounded square with a plugin's initials, used as its icon. */
 @Composable

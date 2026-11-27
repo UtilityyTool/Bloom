@@ -71,8 +71,9 @@ fun SetupScreen(onFinish: (StartPreset, Map<String, Boolean>) -> Unit) {
         ) {
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    BloomMark(72.dp)
-                    Text("Welcome to Bloom", style = MaterialTheme.typography.displaySmall)
+                    BloomMark(88.dp)
+                    Text("Welcome to", style = MaterialTheme.typography.headlineMedium)
+                    BloomWordmark(46.dp)
                     Text(
                         "Plugins and extra features for Discord's new app. Everything lives in one menu, so Discord itself looks the same.",
                         style = MaterialTheme.typography.bodyLarge,

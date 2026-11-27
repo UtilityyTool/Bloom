@@ -46,14 +46,7 @@ fun HomeScreen(state: AppState, onOpenPlugins: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item {
-            Row(
-                Modifier.padding(bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                BloomMark(44.dp)
-                Text("Bloom", style = MaterialTheme.typography.headlineLarge)
-            }
+            BloomLockup(30.dp, Modifier.padding(top = 8.dp, bottom = 12.dp))
         }
 
         // 1. Is Discord on this phone?

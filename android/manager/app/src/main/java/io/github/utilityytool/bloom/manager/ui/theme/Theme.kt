@@ -13,7 +13,12 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
+import io.github.utilityytool.bloom.manager.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -58,14 +63,30 @@ val BloomShapes = Shapes(
     extraLarge = RoundedCornerShape(36.dp),
 )
 
-// Bolder headlines than the Material default.
+// Headings use Google Sans Flex with its roundness turned all the way up (same as the logo).
+// Body text stays the phone's own font, so long text reads naturally on any device.
+@OptIn(ExperimentalTextApi::class)
+private fun rounded(weight: Int) = Font(
+    R.font.gsf_rounded,
+    weight = FontWeight(weight),
+    variationSettings = FontVariation.Settings(FontVariation.weight(weight)),
+)
+
+@OptIn(ExperimentalTextApi::class)
+val BloomRounded = FontFamily(rounded(500), rounded(600), rounded(700), rounded(800))
+
 private val base = Typography()
 val BloomTypography = base.copy(
-    displaySmall = base.displaySmall.copy(fontWeight = FontWeight.Bold, letterSpacing = (-0.5).sp),
-    headlineLarge = base.headlineLarge.copy(fontWeight = FontWeight.Bold),
-    headlineMedium = base.headlineMedium.copy(fontWeight = FontWeight.Bold),
-    titleLarge = base.titleLarge.copy(fontWeight = FontWeight.Bold),
-    titleMedium = base.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+    displayLarge = base.displayLarge.copy(fontFamily = BloomRounded, fontWeight = FontWeight.Bold),
+    displayMedium = base.displayMedium.copy(fontFamily = BloomRounded, fontWeight = FontWeight.Bold),
+    displaySmall = base.displaySmall.copy(fontFamily = BloomRounded, fontWeight = FontWeight.Bold, letterSpacing = (-0.5).sp),
+    headlineLarge = base.headlineLarge.copy(fontFamily = BloomRounded, fontWeight = FontWeight.Bold),
+    headlineMedium = base.headlineMedium.copy(fontFamily = BloomRounded, fontWeight = FontWeight.Bold),
+    headlineSmall = base.headlineSmall.copy(fontFamily = BloomRounded, fontWeight = FontWeight.Bold),
+    titleLarge = base.titleLarge.copy(fontFamily = BloomRounded, fontWeight = FontWeight.Bold),
+    titleMedium = base.titleMedium.copy(fontFamily = BloomRounded, fontWeight = FontWeight.SemiBold),
+    titleSmall = base.titleSmall.copy(fontFamily = BloomRounded, fontWeight = FontWeight.SemiBold),
+    labelLarge = base.labelLarge.copy(fontFamily = BloomRounded, fontWeight = FontWeight.SemiBold),
 )
 
 /**

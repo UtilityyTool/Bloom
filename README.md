@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/bloom-lockup-light.svg">
+    <img alt="Bloom" src="assets/brand/bloom-lockup-dark.svg" height="72">
+  </picture>
+</p>
+
 # Bloom
 
 Plugins and extra features for Discord's new native app (Phoenix), on Windows and Android.
@@ -24,7 +31,8 @@ Everything lives in one Material 3 menu, so Discord itself looks the same.
 | `plugins/` | Built-in plugins, one folder each, work on both platforms |
 | `signatures/` | "Where to find things in Discord," per platform and Discord version |
 | `api/` | Plugin API types for plugin authors |
-| `tools/`, `docs/`, `assets/` | Our helper tools, guides, icons and fonts |
+| `assets/brand/` | Logo, wordmark and lockup files, plus how to use them |
+| `tools/`, `docs/` | Our helper tools (including the logo generator) and guides |
 
 ## Try the Android test build
 
