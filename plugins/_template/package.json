@@ -1,0 +1,14 @@
+{
+  "name": "bloom-plugin",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "esbuild src/index.ts --bundle --format=iife --target=es2020 --outfile=dist/index.js",
+    "dev": "esbuild src/index.ts --bundle --format=iife --target=es2020 --outfile=dist/index.js --watch"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.0"
+  }
+}

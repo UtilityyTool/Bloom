@@ -34,6 +34,8 @@ Everything lives in one Material 3 menu, so Discord itself looks the same.
 | `assets/brand/` | Logo, wordmark and lockup files, plus how to use them |
 | `tools/`, `docs/` | Our helper tools (including the logo generator) and guides |
 
+See [ROADMAP.md](ROADMAP.md) for what's done and what's next.
+
 ## Try the Android test build
 
 1. On your phone, open this repo's **Releases** page.

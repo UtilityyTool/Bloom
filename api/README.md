@@ -1,5 +1,7 @@
 # Plugin API
 
-Type definitions (`bloom.d.ts`) for people writing plugins.
+Types for plugin authors, so a plugin written against them actually runs on Bloom.
 
-_Status: planned — nothing here yet._
+- **`bloom.d.ts`** — the `bloom` global: events, messages, and per-plugin storage. Reference it from your plugin with `/// <reference path="../../api/bloom.d.ts" />`.
+
+Start from [`plugins/_template`](../plugins/_template), which already wires this up with type-checking and a build.
