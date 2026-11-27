@@ -16,13 +16,14 @@ Where the project is and what's next. This is the running to-do list.
 - **Plugin author tooling** — typed API (`api/bloom.d.ts`) and a starter template (`plugins/_template`) that type-checks and builds.
 - **Plugin signing (`crates/signing`)** — Ed25519 signatures over a plugin digest; tamper-proof Verified badge; trust levels. 5 tests.
 - **Host harness (`crates/host`)** — ties it together: loads a plugin folder, decides its trust level, enforces permissions, runs it, times it. Runnable demo + 4 tests. This is Bloom's brain with the Discord connection stubbed.
+- **Publish-time review (`crates/review`)** — the automated checks a plugin must pass to be Verified: undeclared permissions, escape hatches (eval/localStorage/raw requests), obfuscation, risky combos. Runnable demo + 7 tests.
 
 ## Next
 
 - **TypeScript dev loop polish** — make Developer mode watch a plugin folder and hot-reload its built `dist/index.js`.
 - **Plugin security: signing + verification** — the store-trust layer:
   - cryptographic signing (**built**: `crates/signing`, Ed25519 over a content digest, 5 tests — tampering breaks the badge, forged signatures rejected, trust levels resolve)
-  - automated checks at publish time: code matches declared permissions, no obfuscation, flag risky combos (e.g. reads messages **and** sends to a server)
+  - automated checks at publish time (**built**: `crates/review`): code matches declared permissions, no obfuscation/escape hatches, flag risky combos (e.g. reads messages **and** sends to a server)
   - two tiers: **Verified** (reviewed + signed, green check) vs **Community** (installable with a clear "not reviewed" warning)
   - developers adding plugins locally are never flagged; flagging is a publish-time gate, and genuinely risky code is what it catches
   - **required warnings** (specced in the rulebook, mocked up): a warning every time Developer mode is turned on, and a warning every time an unverified plugin is enabled — both telling the user not to add plugins they were told to add or found outside the store

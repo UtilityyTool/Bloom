@@ -1,0 +1,9 @@
+[package]
+name = "bloom-review"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+description = "Automated publish-time checks a plugin must pass before it can be Verified."
+
+[dependencies]
+bloom-runtime = { path = "../runtime" }

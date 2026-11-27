@@ -50,6 +50,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "bloom-review"
+version = "0.1.0"
+dependencies = [
+ "bloom-runtime",
+]
+
+[[package]]
 name = "bloom-runtime"
 version = "0.1.0"
 dependencies = [
