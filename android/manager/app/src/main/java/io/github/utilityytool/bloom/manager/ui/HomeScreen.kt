@@ -15,11 +15,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,9 +36,10 @@ import io.github.utilityytool.bloom.manager.data.AppState
 import io.github.utilityytool.bloom.manager.data.findDiscord
 
 @Composable
-fun HomeScreen(state: AppState, onOpenPlugins: () -> Unit, onOpenInstall: () -> Unit) {
+fun HomeScreen(state: AppState, onOpenInstall: () -> Unit) {
     val context = LocalContext.current
     var discord by remember { mutableStateOf(findDiscord(context)) }
+    val ready = discord?.hasPhoenix == true
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -49,34 +50,41 @@ fun HomeScreen(state: AppState, onOpenPlugins: () -> Unit, onOpenInstall: () -> 
             BloomLockup(30.dp, Modifier.padding(top = 8.dp, bottom = 12.dp))
         }
 
-        // 1. Is Discord on this phone?
+        // Discord build status
         item {
             val found = discord
             Surface(
                 shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp, bottomEnd = 32.dp, bottomStart = 12.dp),
-                color = if (found != null) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiaryContainer,
+                color = if (ready) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiaryContainer,
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Icon(if (found != null) Icons.Default.CheckCircle else Icons.Default.Info, contentDescription = null)
+                        Icon(if (ready) Icons.Default.CheckCircle else Icons.Default.Info, contentDescription = null)
                         Text(
-                            if (found != null) "Discord found" else "Discord isn't installed",
+                            when {
+                                found == null -> "Discord isn't installed"
+                                ready -> "Phoenix build ready"
+                                else -> "Regular Discord found"
+                            },
                             style = MaterialTheme.typography.titleLarge,
                         )
                     }
-                    if (found != null) {
-                        Text("Version ${found.versionName}", style = MaterialTheme.typography.bodyLarge)
-                        Text(
-                            if (found.isAlpha) "This is an alpha build, which has Discord's new Phoenix app inside it."
-                            else "Phoenix isn't in regular Discord yet. For now it's only in Discord's alpha builds.",
+                    when {
+                        found == null -> {
+                            Text("Install Discord first, then come back here.", style = MaterialTheme.typography.bodyMedium)
+                            FilledTonalButton(onClick = { openLink(context, "market://details?id=com.discord") }) {
+                                Text("Get Discord")
+                            }
+                        }
+                        ready -> Text(
+                            "Discord ${found.versionName} — the build Bloom needs. You're good to set up Bloom.",
                             style = MaterialTheme.typography.bodyMedium,
                         )
-                    } else {
-                        Text("Install Discord first, then come back here.", style = MaterialTheme.typography.bodyMedium)
-                        FilledTonalButton(onClick = { openLink(context, "market://details?id=com.discord") }) {
-                            Text("Get Discord")
-                        }
+                        else -> Text(
+                            "Discord ${found.versionName}. This build doesn't have Phoenix. Setup will switch you to the Alpha.",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
                     }
                     TextButton(onClick = { discord = findDiscord(context) }, contentPadding = PaddingValues(0.dp)) {
                         Text("Check again")
@@ -85,7 +93,7 @@ fun HomeScreen(state: AppState, onOpenPlugins: () -> Unit, onOpenInstall: () -> 
             }
         }
 
-        // 2. Installing Bloom into Discord (next milestone).
+        // Set up / open Bloom
         item {
             Surface(
                 shape = RoundedCornerShape(28.dp),
@@ -93,36 +101,32 @@ fun HomeScreen(state: AppState, onOpenPlugins: () -> Unit, onOpenInstall: () -> 
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Add Bloom to Discord", style = MaterialTheme.typography.titleMedium)
+                    Text("Set up Bloom", style = MaterialTheme.typography.titleMedium)
                     Text(
-                        "Get on Discord's Alpha and turn on Phoenix, so Bloom can run. We'll walk you through it.",
+                        "Get on Discord's Alpha and turn on Phoenix, so Bloom can run. We'll walk you through it step by step.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    Button(onClick = onOpenInstall) { Text("Set up Bloom") }
+                    Button(onClick = onOpenInstall) { Text(if (ready) "Open setup" else "Start setup") }
                 }
             }
         }
 
-        // 3. Plugins summary.
+        // Updates (what the Manager is for)
         item {
             Surface(
-                onClick = onOpenPlugins,
                 shape = RoundedCornerShape(28.dp),
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("${state.onCount} plugins ready", style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            "They'll turn on once Bloom is in Discord.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    @Suppress("DEPRECATION")
-                    Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Open plugins")
+                Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Updates", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        "The Manager keeps Bloom up to date and re-applies it after Discord updates. Nothing to update right now.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    OutlinedButton(onClick = {}) { Text("Check for updates") }
                 }
             }
         }

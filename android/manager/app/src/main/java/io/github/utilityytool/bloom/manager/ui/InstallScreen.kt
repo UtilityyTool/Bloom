@@ -56,9 +56,10 @@ private enum class Step { DETECT, GET_ALPHA, UNLOCK, DONE }
 @Composable
 fun InstallScreen(onClose: () -> Unit) {
     val context = LocalContext.current
-    val discord = remember { findDiscord(context) }
+    var discord by remember { mutableStateOf(findDiscord(context)) }
     var step by rememberSaveable { mutableStateOf(Step.DETECT) }
     var agreed by rememberSaveable { mutableStateOf(false) }
+    var alphaMissing by rememberSaveable { mutableStateOf(false) }
 
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
@@ -79,8 +80,8 @@ fun InstallScreen(onClose: () -> Unit) {
 
             Box(Modifier.weight(1f).fillMaxWidth()) {
                 when (step) {
-                    Step.DETECT -> DetectStep(discordVersion = discord?.versionName, isAlpha = discord?.isAlpha == true)
-                    Step.GET_ALPHA -> GetAlphaStep(onOpenSignup = { openLink(context, DISCORD_ALPHA_URL) })
+                    Step.DETECT -> DetectStep(discordVersion = discord?.versionName, hasPhoenix = discord?.hasPhoenix == true)
+                    Step.GET_ALPHA -> GetAlphaStep(alphaMissing = alphaMissing, onOpenSignup = { openLink(context, DISCORD_ALPHA_URL) })
                     Step.UNLOCK -> UnlockStep(
                         agreed = agreed,
                         onToggle = { agreed = !agreed },
@@ -102,13 +103,24 @@ fun InstallScreen(onClose: () -> Unit) {
             ) {
                 if (step == Step.GET_ALPHA || step == Step.UNLOCK) {
                     OutlinedButton(
-                        onClick = { step = Step.entries[step.ordinal - 1]; agreed = false },
+                        onClick = { step = Step.entries[step.ordinal - 1]; agreed = false; alphaMissing = false },
                         modifier = Modifier.height(52.dp),
                     ) { Text("Back") }
                 }
                 when (step) {
-                    Step.DETECT -> MainButton("Start", Modifier.weight(1f)) { step = Step.GET_ALPHA }
-                    Step.GET_ALPHA -> MainButton("I've got the Alpha", Modifier.weight(1f)) { step = Step.UNLOCK; agreed = false }
+                    Step.DETECT -> MainButton("Start", Modifier.weight(1f)) {
+                        step = if (discord?.hasPhoenix == true) Step.UNLOCK else Step.GET_ALPHA
+                    }
+                    Step.GET_ALPHA -> MainButton("I've got the Alpha", Modifier.weight(1f)) {
+                        // Re-read the installed build. Only move on once the Alpha is really there.
+                        val fresh = findDiscord(context)
+                        discord = fresh
+                        if (fresh?.hasPhoenix == true) {
+                            step = Step.UNLOCK; agreed = false; alphaMissing = false
+                        } else {
+                            alphaMissing = true
+                        }
+                    }
                     else -> {}
                 }
             }
@@ -161,7 +173,7 @@ private fun InfoCard(tinted: Boolean = false, content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun DetectStep(discordVersion: String?, isAlpha: Boolean) {
+private fun DetectStep(discordVersion: String?, hasPhoenix: Boolean) {
     StepColumn {
         Spacer(Modifier.height(12.dp))
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { BloomMark(96.dp) }
@@ -175,7 +187,7 @@ private fun DetectStep(discordVersion: String?, isAlpha: Boolean) {
                 Text(
                     when {
                         discordVersion == null -> "Discord isn't installed yet."
-                        isAlpha -> "Found: Discord $discordVersion (Alpha). Good — this build has Phoenix inside."
+                        hasPhoenix -> "Found: Discord $discordVersion. Good — this build has Phoenix inside."
                         else -> "Found: Discord $discordVersion. Phoenix isn't in this build yet."
                     },
                     style = MaterialTheme.typography.bodyMedium,
@@ -193,13 +205,22 @@ private fun DetectStep(discordVersion: String?, isAlpha: Boolean) {
 }
 
 @Composable
-private fun GetAlphaStep(onOpenSignup: () -> Unit) {
+private fun GetAlphaStep(alphaMissing: Boolean, onOpenSignup: () -> Unit) {
     StepColumn {
         Text("Get Discord's Alpha", style = MaterialTheme.typography.headlineMedium)
         Text(
             "This comes straight from Discord and Google. Bloom never hands you a copy of Discord itself.",
             style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        if (alphaMissing) {
+            InfoCard(tinted = true) {
+                Icon(Icons.Default.Warning, contentDescription = null)
+                Text(
+                    "We don't see the Alpha build yet. Make sure Discord finished updating in the Play Store, then tap \"I've got the Alpha\" again.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
         Surface(shape = RoundedCornerShape(24.dp), color = MaterialTheme.colorScheme.surfaceContainerHigh, modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(horizontal = 18.dp, vertical = 6.dp)) {
                 NumberedRow(1, "Tap the button below to open Discord's own Alpha sign-up page.")

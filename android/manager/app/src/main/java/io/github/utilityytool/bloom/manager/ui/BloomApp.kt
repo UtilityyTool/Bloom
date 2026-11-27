@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -23,15 +22,14 @@ import io.github.utilityytool.bloom.manager.data.AppState
 
 private enum class Tab(val label: String, val icon: ImageVector) {
     HOME("Home", Icons.Default.Home),
-    PLUGINS("Plugins", Icons.Default.Build),
     SETTINGS("Settings", Icons.Default.Settings),
 }
 
-/** Shows first-run setup, then the three main tabs. */
+/** First-run welcome, then the Manager: Home (install/update) and Settings. */
 @Composable
 fun BloomApp(state: AppState) {
     if (!state.setupDone) {
-        SetupScreen(onFinish = { preset, custom -> state.finishSetup(preset, custom) })
+        SetupScreen(onFinish = { state.finishSetup() })
         return
     }
 
@@ -58,8 +56,7 @@ fun BloomApp(state: AppState) {
     ) { pad ->
         Box(Modifier.fillMaxSize().padding(pad)) {
             when (tab) {
-                Tab.HOME -> HomeScreen(state, onOpenPlugins = { tab = Tab.PLUGINS }, onOpenInstall = { showInstall = true })
-                Tab.PLUGINS -> PluginsScreen(state)
+                Tab.HOME -> HomeScreen(state, onOpenInstall = { showInstall = true })
                 Tab.SETTINGS -> SettingsScreen(state)
             }
         }

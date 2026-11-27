@@ -6,17 +6,15 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,11 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.utilityytool.bloom.manager.R
-import io.github.utilityytool.bloom.manager.data.PluginInfo
 
 /** The Bloom logo ("Bud"), with its violet-to-pink gradient. */
 @Composable
@@ -67,68 +63,8 @@ fun BloomLockup(height: Dp, modifier: Modifier = Modifier) {
 
 private const val WORDMARK_RATIO = 4.65f
 
-/** Rounded square with a plugin's initials, used as its icon. */
-@Composable
-fun PluginBadge(plugin: PluginInfo, modifier: Modifier = Modifier) {
-    Surface(
-        modifier = modifier.size(44.dp),
-        shape = RoundedCornerShape(14.dp),
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(plugin.initials, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-        }
-    }
-}
-
-/** Small tinted label, e.g. "Reads messages". */
-@Composable
-fun AccessLabel(text: String) {
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    ) {
-        Text(
-            text,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-            style = MaterialTheme.typography.labelSmall,
-        )
-    }
-}
-
-/** One plugin: badge, name, description, what it can access, and an optional switch. */
-@Composable
-fun PluginRow(
-    plugin: PluginInfo,
-    checked: Boolean?,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier.fillMaxWidth().padding(vertical = 10.dp),
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        PluginBadge(plugin)
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(plugin.name, style = MaterialTheme.typography.titleMedium)
-            Text(
-                plugin.description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            AccessLabel(plugin.access)
-        }
-        if (checked != null) {
-            Switch(checked = checked, onCheckedChange = onCheckedChange)
-        }
-    }
-}
-
 /**
- * A choice card whose corners spring into a bolder shape when picked:
+ * A card whose corners spring into a bolder shape when picked:
  * a small Material 3 Expressive touch.
  */
 @Composable

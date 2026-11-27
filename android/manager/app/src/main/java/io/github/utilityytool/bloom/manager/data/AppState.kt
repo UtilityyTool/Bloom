@@ -2,14 +2,14 @@ package io.github.utilityytool.bloom.manager.data
 
 import android.content.Context
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.utilityytool.bloom.manager.ui.theme.ThemeMode
 
 /**
- * Everything the app remembers. Each change is saved to the phone right away, and the
- * screens update automatically because the values are Compose state.
+ * What the Manager app remembers. The Manager handles installing, updating and
+ * settings — plugins themselves live inside Discord, not here. Each change saves
+ * to the phone right away, and the screens update because these are Compose state.
  */
 class AppState(context: Context) {
     private val prefs = context.getSharedPreferences("bloom", Context.MODE_PRIVATE)
@@ -26,31 +26,9 @@ class AppState(context: Context) {
     var wallpaperColors by mutableStateOf(prefs.getBoolean("wallpaper_colors", true))
         private set
 
-    /** Plugin id -> on/off. */
-    val plugins = mutableStateMapOf<String, Boolean>().apply {
-        BuiltInPlugins.forEach { put(it.id, prefs.getBoolean("plugin_${it.id}", false)) }
-    }
-
-    val onCount: Int get() = plugins.values.count { it }
-
-    fun finishSetup(preset: StartPreset, custom: Map<String, Boolean>) {
-        val edit = prefs.edit()
-        BuiltInPlugins.forEach { p ->
-            val on = when (preset) {
-                StartPreset.RECOMMENDED -> p.id in RecommendedIds
-                StartPreset.MENU_ONLY -> false
-                StartPreset.CUSTOM -> custom[p.id] == true
-            }
-            plugins[p.id] = on
-            edit.putBoolean("plugin_${p.id}", on)
-        }
-        edit.putBoolean("setup_done", true).apply()
+    fun finishSetup() {
         setupDone = true
-    }
-
-    fun setPlugin(id: String, on: Boolean) {
-        plugins[id] = on
-        prefs.edit().putBoolean("plugin_$id", on).apply()
+        prefs.edit().putBoolean("setup_done", true).apply()
     }
 
     fun updateThemeMode(mode: ThemeMode) {
