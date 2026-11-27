@@ -1,0 +1,58 @@
+# Builds the Bloom Manager Android app on every push and puts the APK on the
+# repo's Releases page under "Test build", so it can be installed straight from a phone.
+name: Android test build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "android/**"
+      - ".github/workflows/android-manager.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-test-build
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android/manager
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build the APK
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:assembleDebug --stacktrace
+          cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/bloom-manager.apk"
+
+      - name: Keep a copy on the run page
+        uses: actions/upload-artifact@v4
+        with:
+          name: bloom-manager
+          path: bloom-manager.apk
+
+      - name: Publish to Releases as "Test build"
+        working-directory: ${{ github.workspace }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete test-build --yes --cleanup-tag || true
+          gh release create test-build bloom-manager.apk \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --title "Test build #${GITHUB_RUN_NUMBER}" \
+            --notes "Automatic test build of Bloom Manager from commit ${GITHUB_SHA::7}. Tap bloom-manager.apk to download and install. It doesn't patch Discord yet."

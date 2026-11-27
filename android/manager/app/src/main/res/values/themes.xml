@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Only used for the split second before Compose draws. -->
+    <style name="Theme.Bloom" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/bloom_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+    <color name="bloom_background">#141218</color>
+    <color name="bloom_icon_background">#2B2930</color>
+</resources>
