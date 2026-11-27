@@ -1,0 +1,4 @@
+# Rust workspace for Bloom's native crates. The plugin runtime is the first real one.
+[workspace]
+resolver = "2"
+members = ["crates/runtime"]
