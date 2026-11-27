@@ -13,6 +13,9 @@ pub mod caps;
 pub mod engine;
 pub mod manifest;
 
+#[cfg(feature = "js")]
+pub mod js;
+
 pub use budget::{Budget, Verdict};
 pub use caps::Grant;
 pub use engine::{Event, Plugin, Runtime, Status};

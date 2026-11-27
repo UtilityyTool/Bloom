@@ -45,6 +45,19 @@ impl Permission {
         }
     }
 
+    /// The `plugin.json` string for this permission (also what plugin JS checks).
+    pub fn key(self) -> &'static str {
+        match self {
+            Permission::UiChange => "ui.change",
+            Permission::Storage => "storage",
+            Permission::Notifications => "notifications",
+            Permission::ClipboardWrite => "clipboard.write",
+            Permission::MessagesRead => "messages.read",
+            Permission::MessagesRender => "messages.render",
+            Permission::MessagesEditOutgoing => "messages.edit-outgoing",
+        }
+    }
+
     /// The label the user sees in the Bloom menu.
     pub fn label(self) -> &'static str {
         match self {

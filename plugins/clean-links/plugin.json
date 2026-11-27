@@ -1,0 +1,10 @@
+{
+  "id": "clean-links",
+  "name": "Clean links",
+  "version": "1.0.0",
+  "author": "Bloom",
+  "description": "Strips tracking junk (like ?si= and utm_ tags) from links you send.",
+  "bloom": ">=0.2.0",
+  "permissions": ["messages.edit-outgoing"],
+  "network": []
+}

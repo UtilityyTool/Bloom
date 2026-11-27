@@ -5,6 +5,13 @@ edition = "2021"
 license = "GPL-3.0-only"
 description = "Runs Bloom plugins and enforces the plugin rulebook (permissions + performance)."
 
+[features]
+default = []
+# The JavaScript engine binding, so plugins can be written in TypeScript/JS.
+# Opt-in, so consumers that only need the rules don't pull a whole JS engine.
+js = ["dep:boa_engine"]
+
 [dependencies]
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+boa_engine = { version = "0.20", optional = true }
