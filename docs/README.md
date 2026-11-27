@@ -2,4 +2,6 @@
 
 Step-by-step guides for users and plugin makers.
 
-_Status: planned — nothing here yet._
+| Doc | What it covers |
+| --- | --- |
+| [plugin-rules.md](plugin-rules.md) | What plugins can and can't do, permissions, speed limits, store review |

@@ -48,6 +48,10 @@ The test build is the Bloom Manager app's look and setup flow only. It does not 
 2. **Plugins declare permissions in `plugin.json`, and the runtime enforces them.** The access labels users see are real limits.
 3. **Nothing edits Discord's files on Windows.** The launcher loads Bloom when Discord starts.
 
+## Contributing
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) first. The short version: original code only, smooth or it doesn't ship, and the user's account comes first.
+
 ## License
 
 Bloom is free software under the [GNU GPL v3](LICENSE). You can use, change and share it, but any version you share must stay open source under the same license.
