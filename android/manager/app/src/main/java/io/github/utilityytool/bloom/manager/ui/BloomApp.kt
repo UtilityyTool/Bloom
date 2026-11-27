@@ -25,20 +25,9 @@ private enum class Tab(val label: String, val icon: ImageVector) {
     SETTINGS("Settings", Icons.Default.Settings),
 }
 
-/** First-run welcome, then the Manager: Home (install/update) and Settings. */
+/** The Manager: Home checks your Discord build and installs/updates Bloom; plus Settings. */
 @Composable
 fun BloomApp(state: AppState) {
-    if (!state.setupDone) {
-        SetupScreen(onFinish = { state.finishSetup() })
-        return
-    }
-
-    var showInstall by rememberSaveable { mutableStateOf(false) }
-    if (showInstall) {
-        InstallScreen(onClose = { showInstall = false })
-        return
-    }
-
     var tab by rememberSaveable { mutableStateOf(Tab.HOME) }
     Scaffold(
         bottomBar = {
@@ -56,7 +45,7 @@ fun BloomApp(state: AppState) {
     ) { pad ->
         Box(Modifier.fillMaxSize().padding(pad)) {
             when (tab) {
-                Tab.HOME -> HomeScreen(state, onOpenInstall = { showInstall = true })
+                Tab.HOME -> HomeScreen(state)
                 Tab.SETTINGS -> SettingsScreen(state)
             }
         }

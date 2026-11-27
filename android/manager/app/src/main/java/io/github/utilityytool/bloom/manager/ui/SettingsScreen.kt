@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -71,11 +70,6 @@ fun SettingsScreen(state: AppState) {
                     enabled = canUseWallpaper,
                 )
             }
-        }
-
-        item {
-            SectionTitle("Setup")
-            OutlinedButton(onClick = { state.runSetupAgain() }) { Text("Run setup again") }
         }
 
         item {

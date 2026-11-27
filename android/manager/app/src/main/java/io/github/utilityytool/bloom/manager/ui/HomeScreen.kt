@@ -35,11 +35,16 @@ import androidx.compose.ui.unit.dp
 import io.github.utilityytool.bloom.manager.data.AppState
 import io.github.utilityytool.bloom.manager.data.findDiscord
 
+/**
+ * Home is the version checker: it reads the installed Discord build and says whether
+ * Bloom can be installed on it. The installer itself is a later piece.
+ */
 @Composable
-fun HomeScreen(state: AppState, onOpenInstall: () -> Unit) {
+fun HomeScreen(state: AppState) {
     val context = LocalContext.current
     var discord by remember { mutableStateOf(findDiscord(context)) }
-    val ready = discord?.hasPhoenix == true
+    var showSoon by remember { mutableStateOf(false) }
+    val canInstall = discord?.hasPhoenix == true
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -50,50 +55,50 @@ fun HomeScreen(state: AppState, onOpenInstall: () -> Unit) {
             BloomLockup(30.dp, Modifier.padding(top = 8.dp, bottom = 12.dp))
         }
 
-        // Discord build status
+        // The verdict: can Bloom be installed on this build?
         item {
             val found = discord
             Surface(
                 shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp, bottomEnd = 32.dp, bottomStart = 12.dp),
-                color = if (ready) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiaryContainer,
+                color = if (canInstall) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiaryContainer,
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Icon(if (ready) Icons.Default.CheckCircle else Icons.Default.Info, contentDescription = null)
+                        Icon(if (canInstall) Icons.Default.CheckCircle else Icons.Default.Info, contentDescription = null)
                         Text(
                             when {
                                 found == null -> "Discord isn't installed"
-                                ready -> "Phoenix build ready"
-                                else -> "Regular Discord found"
+                                canInstall -> "Bloom can be installed"
+                                else -> "Not this Discord build"
                             },
                             style = MaterialTheme.typography.titleLarge,
                         )
                     }
                     when {
                         found == null -> {
-                            Text("Install Discord first, then come back here.", style = MaterialTheme.typography.bodyMedium)
+                            Text("Install Discord first, then check again.", style = MaterialTheme.typography.bodyMedium)
                             FilledTonalButton(onClick = { openLink(context, "market://details?id=com.discord") }) {
                                 Text("Get Discord")
                             }
                         }
-                        ready -> Text(
-                            "Discord ${found.versionName} — the build Bloom needs. You're good to set up Bloom.",
+                        canInstall -> Text(
+                            "Discord ${found.versionName} has Phoenix — the build Bloom needs.",
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         else -> Text(
-                            "Discord ${found.versionName}. This build doesn't have Phoenix. Setup will switch you to the Alpha.",
+                            "Discord ${found.versionName} doesn't have Phoenix. Bloom needs Discord's Phoenix (Alpha) build to run.",
                             style = MaterialTheme.typography.bodyMedium,
                         )
                     }
-                    TextButton(onClick = { discord = findDiscord(context) }, contentPadding = PaddingValues(0.dp)) {
+                    TextButton(onClick = { discord = findDiscord(context); showSoon = false }, contentPadding = PaddingValues(0.dp)) {
                         Text("Check again")
                     }
                 }
             }
         }
 
-        // Set up / open Bloom
+        // Install (enabled only when the build is compatible; the installer engine is next).
         item {
             Surface(
                 shape = RoundedCornerShape(28.dp),
@@ -101,13 +106,21 @@ fun HomeScreen(state: AppState, onOpenInstall: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Set up Bloom", style = MaterialTheme.typography.titleMedium)
+                    Text("Install Bloom", style = MaterialTheme.typography.titleMedium)
                     Text(
-                        "Get on Discord's Alpha and turn on Phoenix, so Bloom can run. We'll walk you through it step by step.",
+                        if (canInstall) "Your Discord build is compatible."
+                        else "Grayed out until Bloom detects a compatible Discord build.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    Button(onClick = onOpenInstall) { Text(if (ready) "Open setup" else "Start setup") }
+                    Button(onClick = { showSoon = true }, enabled = canInstall) { Text("Install Bloom") }
+                    if (showSoon) {
+                        Text(
+                            "The installer is the next piece we're building — this is where it'll run.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
         }
