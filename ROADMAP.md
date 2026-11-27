@@ -14,12 +14,13 @@ Where the project is and what's next. This is the running to-do list.
   - per-plugin storage (isolated, 5 MB cap)
   - 19 passing tests
 - **Plugin author tooling** — typed API (`api/bloom.d.ts`) and a starter template (`plugins/_template`) that type-checks and builds.
+- **Plugin signing (`crates/signing`)** — Ed25519 signatures over a plugin digest; tamper-proof Verified badge; trust levels. 5 tests.
 
 ## Next
 
 - **TypeScript dev loop polish** — make Developer mode watch a plugin folder and hot-reload its built `dist/index.js`.
 - **Plugin security: signing + verification** — the store-trust layer:
-  - cryptographic signing of verified plugins; the app rejects tampered or fake-"verified" plugins on install and update
+  - cryptographic signing (**built**: `crates/signing`, Ed25519 over a content digest, 5 tests — tampering breaks the badge, forged signatures rejected, trust levels resolve)
   - automated checks at publish time: code matches declared permissions, no obfuscation, flag risky combos (e.g. reads messages **and** sends to a server)
   - two tiers: **Verified** (reviewed + signed, green check) vs **Community** (installable with a clear "not reviewed" warning)
   - developers adding plugins locally are never flagged; flagging is a publish-time gate, and genuinely risky code is what it catches
