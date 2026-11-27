@@ -47,3 +47,7 @@ The test build is the Bloom Manager app's look and setup flow only. It does not 
 1. **Signatures are data, not code.** A Discord update that breaks a hook is fixed by shipping a new signature file.
 2. **Plugins declare permissions in `plugin.json`, and the runtime enforces them.** The access labels users see are real limits.
 3. **Nothing edits Discord's files on Windows.** The launcher loads Bloom when Discord starts.
+
+## License
+
+Bloom is free software under the [GNU GPL v3](LICENSE). You can use, change and share it, but any version you share must stay open source under the same license.
